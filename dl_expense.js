@@ -31,16 +31,25 @@
       
 */
 
+//this calls everything on window load
 window.addEventListener("load", function () {
+      //this creates a like array with all of the inputs in the class sum
       var changeingCells = document.querySelectorAll("table#travelExp input.sum");
+      //this adds a event listener to everything in the array made above
+
       for (var i = 0; i < changeingCells.length; i++) {
-            document.onchange = calcExp();
-            document.getElementById("submitButton").onclick = validateSummary();
+            changeingCells[i].onchange = calcExp;
       }
+      //this adds the onclick event handler to the sumbmit button
+      document.getElementById("submitButton").onclick = function () {
+            validateSummary();
+      };
 });
 
 function validateSummary() {
+      //this get the element with the summary id
       var summary = document.getElementById("summary");
+      //this checks if the validity of summary and changes the notice
       if (summary.validity.valueMissing) {
             summary.setCustomValidity("You must include a summary of the trip in your report");
       } else {
@@ -49,23 +58,31 @@ function validateSummary() {
 }
 
 function calcClass(sumClass) {
+      //this creates a like array with all of the elements in the parameters class
       var sumFields = document.getElementsByClassName(sumClass);
       var sumTotal = 0;
+      //this goes through the like array above and if it is a number then it rounds it to the nearest 2 decimal places other wise it is left empty
       for (var i = 0; i < sumFields.length; i++) {
-            var itemValue = parseFloat(sumFields[i]);
+            var itemValue = parseFloat(sumFields[i].value);
             if (isNaN(itemValue)) {
-                  sumTotal = sumTotal + itemValue;
+                  sumTotal += itemValue;
             }
-            return sumTotal;
       }
+      return sumTotal;
 }
 
 function calcExp() {
-      var expTable = document.querySelectorAll("table#travelExp tr");
+      //this makes a like array with all of the table rows
+      var expTable = document.querySelectorAll("table#travelExp tbody tr");
+      //this goes through all of the table rows adds the subtotal by calling in the number that was rounded in the previous function 
       for (var i = 0; i < expTable.length; i++) {
-            document.getElementById("subtotal" + [i]).value = calcClass("date" + [i]);
-            formatNumber(calcClass().value, 2);
+            document.getElementById("subtotal" + i).value = formatNumber(calcClass("date" + i), 2);
       }
+      document.getElementById("transTotal").value = formatNumber(calcClass("trans"), 2);
+      document.getElementById("lodgeTotal").value = formatNumber(calcClass("lodge"), 2);
+      document.getElementById("mealTotal").value = formatNumber(calcClass("meal"), 2);
+      document.getElementById("otherTotal").value = formatNumber(calcClass("other"), 2);
+      document.getElementById("expTotal").value = formatUSCurrency(calcClass("sum"));
 }
 
 function formatNumber(val, decimals) {
